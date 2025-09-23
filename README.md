@@ -76,7 +76,7 @@ An FFT computes the same result with `O(M log M)` complexity instead of `O(M^2)`
 
 ---
 
-## Current Progress (do not remove — preserved exactly)
+## Current Progress
 
 * **Core & Wrapper Implemented:** A configurable FIR core (`fir_accel.sv`) and Wishbone register interface (`wishbone_fir_if.sv`) are implemented. `TAPS` and `WIDTH` parameters supported.
 * **Testbench Verified:** `tb_fir_top.sv` programs coefficients, feeds input samples, compares outputs vs golden model (moving average, all-ones, alternating signs). PASS/FAIL logging and waveform dump are provided.
@@ -100,10 +100,6 @@ Components and how they connect:
 Separation of datapath (FIR core) and control plane (bus wrapper) maintains modularity and reusability.
 
 ---
-
-## File-by-file (conceptual) — what each file implements and behavior
-
-> **Note:** This is a conceptual section (no file-by-file dumps, but describes responsibilities).
 
 ### `verilog/rtl/accel/fir_accel.sv` — FIR core (datapath)
 
