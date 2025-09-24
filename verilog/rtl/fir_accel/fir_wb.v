@@ -59,7 +59,7 @@ module fir_wb #(
     wire out_full;
     wire out_empty;
     wire [31:0] out_fifo_read_data;
-    wire [31:0] in_fifo_write_data;
+    reg [31:0] in_fifo_write_data;
     reg in_fifo_wr;
     reg out_fifo_rd;
 
@@ -111,7 +111,7 @@ module fir_wb #(
     // Hook up of fir_core (internal instance)
     wire signed [DATA_W-1:0] core_in_sample;
     wire core_in_valid;
-    reg core_in_ready;
+    wire core_in_ready;
     wire core_out_valid;
     wire signed [DATA_W-1:0] core_out_sample;
     reg core_start;
@@ -214,7 +214,7 @@ module fir_wb #(
             in_fifo_write_data <= 32'd0;
             out_fifo_rd <= 0;
             core_start <= 0;
-            core_in_ready <= 1;
+            // core_in_ready <= 1;
         end else begin
             // default deasserts
             wbs_ack_o <= 0;
@@ -222,7 +222,7 @@ module fir_wb #(
             in_fifo_wr <= 0;
             out_fifo_rd <= 0;
             core_start <= 0;
-            core_in_ready <= 1;
+            // core_in_ready <= 1;
 
             if (wbs_cyc_i && wbs_stb_i && !wbs_ack_o) begin
                 wbs_ack_o <= 1;
@@ -261,7 +261,7 @@ module fir_wb #(
                     case (wbs_adr_i - WB_BASE)
                         ADDR_STATUS: begin
                             // status: [0]=core busy? [1]=out_valid pending?
-                            wbs_dat_o <= {30'd0, (core_out_valid?1'b1:1'b0), (mac_busy_internal()?1'b1:1'b0)};
+                            wbs_dat_o <= {30'd0, (core_out_valid?1'b1:1'b0), (mac_busy_internal?1'b1:1'b0)};
                         end
                         ADDR_TAPS: begin
                             wbs_dat_o <= taps_reg;
@@ -303,10 +303,6 @@ module fir_wb #(
     endfunction
 
     // helper to check if core busy (we can't access mac_busy directly - approximate via in_q_cnt > 0 or core_out_valid)
-    function mac_busy_internal;
-        begin
-            mac_busy_internal = (in_q_cnt > 0) || core_out_valid;
-        end
-    endfunction
+    wire mac_busy_internal = (in_q_cnt > 0) || core_out_valid;
 
 endmodule

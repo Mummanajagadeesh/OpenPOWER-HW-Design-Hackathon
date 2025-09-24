@@ -15,25 +15,21 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # ---- Test patterns for project striVe ----
-
 .SUFFIXES:
 .SILENT: clean all
 
-PATTERNS = gpio_vector
+PATTERNS = gpio_vector fir_test
 
-all:  ${PATTERNS}
+all: ${PATTERNS}
+
+${PATTERNS}:
+	cd $@ && make
+
+clean:
 	for i in ${PATTERNS}; do \
-		( cd $$i && make -f Makefile $${i}.vcd &> verify.log && grep Monitor verify.log) ; \
-	done
-
-DV_PATTERNS = $(foreach dv, $(PATTERNS), verify-$(dv))
-$(DV_PATTERNS): verify-% : 
-	cd $* && make
-
-clean:  ${PATTERNS}
-	for i in ${PATTERNS}; do \
-		( cd $$i && make clean ) ; \
+		( cd $$i && make clean ); \
 	done
 	rm -rf *.log
-	
+
 .PHONY: clean all
+ 
